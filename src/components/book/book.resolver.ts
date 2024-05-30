@@ -1,10 +1,11 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { BookService } from './book.service';
 import { CreateBookInput } from './dto/create-book.input';
-import { UpdateBookInput } from './dto/update-book.input';
 import { GetBookPaginationArgs } from './dto/get-book-pagination-args.input';
+import { UpdateBookInput } from './dto/update-book.input';
 import { Book } from './entities/book.entity';
-import { DeleteResult } from 'typeorm';
 
 @Resolver('Book')
 export class BookResolver {
@@ -16,6 +17,7 @@ export class BookResolver {
   }
 
   @Query(() => [Book])
+  @UseGuards(GqlAuthGuard)
   async books(@Args('pagination') pagination: GetBookPaginationArgs) {
     return await this.bookService.findAll(pagination);
   }
