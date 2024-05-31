@@ -1,4 +1,5 @@
-import { User } from 'src/components/users/entities/user.entity';
 import { OmitType } from '@nestjs/swagger';
+
+import { User } from '../../users/entities/user.entity';
 
 export class SignUpInput extends OmitType(User, ['id']) {}

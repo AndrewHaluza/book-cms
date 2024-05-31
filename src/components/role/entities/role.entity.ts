@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { User } from 'src/components/users/entities/user.entity';
+import { User } from '../../../components/users/entities/user.entity';
 import { ROLES, RoleType } from '../constants/roles';
 
 @Entity()

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+import { SessionUser } from '../../users/dto/session-user.dto';
 import { AUTH_CONSTANTS } from '../constants';
-import { SessionUser } from 'src/components/users/dto/session-user.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

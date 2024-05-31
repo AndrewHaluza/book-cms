@@ -4,7 +4,6 @@ import * as crypto from 'crypto';
 
 import { RoleService } from '../role/role.service';
 import { SessionUser } from '../users/dto/session-user.dto';
-import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { AUTH_CONSTANTS } from './constants';
 import { AuthOutput } from './dto/auth.output';

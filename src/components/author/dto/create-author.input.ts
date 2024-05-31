@@ -12,7 +12,7 @@ import { Author } from '../entities/author.entity';
 @InputType('createAuthorInput')
 export class CreateAuthorInput implements Partial<Author> {
   @Field({ nullable: true })
-  id: number;
+  id?: number;
 
   @Field()
   @IsString()

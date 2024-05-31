@@ -1,7 +1,7 @@
 import { Field, InputType, PartialType } from '@nestjs/graphql';
 
-import { graphqlDescription } from 'src/helpers/gql-description';
 import { PaginationArgs } from '../../../dto/pagination-args.input';
+import { graphqlDescription } from '../../../helpers/gql-description';
 
 const sortOrderList = ['ASC', 'DESC'] as const;
 const sortFieldList = ['id', 'title', 'publishedAt'] as const;
@@ -20,7 +20,7 @@ export class GetBooksArgs extends PartialType(PaginationArgs) {
       values: Array.from(sortFieldList),
     }),
   })
-  sortField: SortField = 'id';
+  sortField?: SortField = 'id';
 
   @Field(() => String, {
     defaultValue: 'ASC',
@@ -28,5 +28,5 @@ export class GetBooksArgs extends PartialType(PaginationArgs) {
       values: Array.from(sortOrderList),
     }),
   })
-  sortOrder: SortOrder = 'ASC';
+  sortOrder?: SortOrder = 'ASC';
 }

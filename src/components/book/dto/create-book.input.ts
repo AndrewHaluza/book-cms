@@ -7,7 +7,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { CreateAuthorInput } from 'src/components/author/dto/create-author.input';
+
+import { CreateAuthorInput } from '../../author/dto/create-author.input';
 import { bookLimits } from '../constants/limits';
 
 @InputType('createBookInput')

@@ -46,7 +46,7 @@ class AppMain {
   #enableCors() {
     this.app.enableCors({
       origin: [
-        `http://${process.env.APP_SERVER_HOST}:${process.env.APP_SERVER_PORT}`,
+        `http://${process.env.APP_SERVER_HOST || 'localhost'}:${process.env.APP_SERVER_PORT || 3000}`,
       ],
       methods: 'GET,HEAD,POST,OPTIONS',
     });

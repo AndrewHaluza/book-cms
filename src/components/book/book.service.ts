@@ -1,12 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository, DataSource } from 'typeorm';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
+import { AuthorService } from '../author/author.service';
 import { CreateBookInput } from './dto/create-book.input';
+import { GetBooksArgs } from './dto/get-books-args.input';
 import { UpdateBookInput } from './dto/update-book.input';
 import { Book } from './entities/book.entity';
-import { AuthorService } from '../author/author.service';
-import { GetBooksArgs } from './dto/get-books-args.input';
 
 @Injectable()
 export class BookService {
@@ -15,6 +17,7 @@ export class BookService {
     private bookRepository: Repository<Book>,
     private authorService: AuthorService,
     private connection: DataSource,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(createBookInput: CreateBookInput) {
@@ -43,6 +46,11 @@ export class BookService {
 
   async findAll(getBooksArgs: GetBooksArgs) {
     try {
+      const cacheKey = `book-${JSON.stringify(getBooksArgs)}`;
+      const cachedData = await this.cacheManager.get<Book>(cacheKey);
+
+      if (cachedData) return cachedData;
+
       let books = [];
 
       if (getBooksArgs.search) {
@@ -58,13 +66,15 @@ export class BookService {
         });
       }
 
+      await this.cacheManager.set(cacheKey, books);
+
       return books;
     } catch (error) {
       throw error;
     }
   }
 
-  #searchBooks(pagination: GetBooksArgs) {
+  #searchBooks(getBooksArgs: GetBooksArgs) {
     return this.bookRepository
       .createQueryBuilder('book')
       .leftJoinAndSelect('book.authors', 'author')
@@ -72,21 +82,30 @@ export class BookService {
         `to_tsvector('english', book.title) @@ plainto_tsquery('english', :searchTerm) OR
     to_tsvector('english', author.fullName) @@ plainto_tsquery('english', :searchTerm) OR
     EXTRACT(YEAR FROM book.publishedAt)::text LIKE :searchTerm`,
-        { searchTerm: pagination.search },
+        { searchTerm: getBooksArgs.search },
       )
-      .limit(pagination.limit)
-      .offset(pagination.offset)
-      .orderBy(`book.${pagination.sortField}`, pagination.sortOrder)
+      .limit(getBooksArgs.limit)
+      .offset(getBooksArgs.offset)
+      .orderBy(`book.${getBooksArgs.sortField}`, getBooksArgs.sortOrder)
       .getMany();
   }
 
   async findOne(id: number) {
     try {
+      const cacheKey = `book-${id}`;
+      const cachedData = await this.cacheManager.get<Book>(cacheKey);
+
+      if (cachedData) return cachedData;
+
       const book = await this.bookRepository.findOneBy({ id });
 
       if (!book) {
         throw new BadRequestException('Book not found');
       }
+
+      await this.cacheManager.set(cacheKey, book);
+
+      return book;
     } catch (error) {
       throw error;
     }
