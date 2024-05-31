@@ -6,7 +6,7 @@ import { CreateBookInput } from './dto/create-book.input';
 import { UpdateBookInput } from './dto/update-book.input';
 import { Book } from './entities/book.entity';
 import { AuthorService } from '../author/author.service';
-import { GetBookPaginationArgs } from './dto/get-book-pagination-args.input';
+import { GetBooksArgs } from './dto/get-books-args.input';
 
 @Injectable()
 export class BookService {
@@ -41,16 +41,19 @@ export class BookService {
     }
   }
 
-  async findAll(pagination: GetBookPaginationArgs) {
+  async findAll(getBooksArgs: GetBooksArgs) {
     try {
       let books = [];
 
-      if (pagination.search) {
-        books = await this.#searchBooks(pagination);
+      if (getBooksArgs.search) {
+        books = await this.#searchBooks(getBooksArgs);
       } else {
         books = await this.bookRepository.find({
-          skip: pagination.offset,
-          take: pagination.limit,
+          skip: getBooksArgs.offset,
+          take: getBooksArgs.limit,
+          order: {
+            [getBooksArgs.sortField]: getBooksArgs.sortOrder,
+          },
           relations: ['authors'],
         });
       }
@@ -61,7 +64,7 @@ export class BookService {
     }
   }
 
-  #searchBooks(pagination: GetBookPaginationArgs) {
+  #searchBooks(pagination: GetBooksArgs) {
     return this.bookRepository
       .createQueryBuilder('book')
       .leftJoinAndSelect('book.authors', 'author')
@@ -73,6 +76,7 @@ export class BookService {
       )
       .limit(pagination.limit)
       .offset(pagination.offset)
+      .orderBy(`book.${pagination.sortField}`, pagination.sortOrder)
       .getMany();
   }
 

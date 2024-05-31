@@ -19,11 +19,13 @@ export class Book {
 
   @Column()
   @Field({})
+  @Index()
   @Index({ fulltext: true })
   title: string;
 
   @Column()
   @Field({})
+  @Index({})
   @Index({ fulltext: true })
   publishedAt: Date;
 

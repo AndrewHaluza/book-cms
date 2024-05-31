@@ -1,24 +1,21 @@
 import {
   Logger,
-  ValidationPipe,
   NestApplicationOptions,
-  VersioningType,
   VERSION_NEUTRAL,
+  ValidationPipe,
+  VersioningType,
 } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
-import { AllExceptionsFilter } from './components/app/filters/allExceptions.filter';
 import { AppModule } from './components/app/app.module';
 import { CustomHeadersEnum } from './enums/custom-headers.enum';
-import { HttpExceptionFilter } from './components/app/filters/http-exception.filter';
-
-// import * as helmet from 'helmet';
 
 class AppMain {
-  logger = new Logger('General logger');
+  logger = new Logger('Main logger');
   appOptions = <NestApplicationOptions>{};
   app: NestExpressApplication;
   constructor() {
@@ -29,6 +26,7 @@ class AppMain {
     await this.#initializeApplicationInstance();
 
     this.#enableCors();
+    this.#useHelmet();
     this.#useGlobalPipes();
     this.#useGlobalFilters();
     this.#enableVersioning();
@@ -47,9 +45,34 @@ class AppMain {
 
   #enableCors() {
     this.app.enableCors({
-      origin: ['http://localhost:3000'],
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      origin: [
+        `http://${process.env.APP_SERVER_HOST}:${process.env.APP_SERVER_PORT}`,
+      ],
+      methods: 'GET,HEAD,POST,OPTIONS',
     });
+  }
+
+  #useHelmet() {
+    this.app.use(
+      helmet({
+        crossOriginEmbedderPolicy: false,
+        contentSecurityPolicy: {
+          directives: {
+            imgSrc: [
+              `'self'`,
+              'data:',
+              'apollo-server-landing-page.cdn.apollographql.com',
+            ],
+            scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+            manifestSrc: [
+              `'self'`,
+              'apollo-server-landing-page.cdn.apollographql.com',
+            ],
+            frameSrc: [`'self'`, 'sandbox.embed.apollographql.com'],
+          },
+        },
+      }),
+    );
   }
 
   #useGlobalPipes() {
@@ -77,7 +100,7 @@ class AppMain {
   }
 
   #initializeLogger() {
-    if (process.env.LOGS === 'true') {
+    if (process.env.APP_LOGS === 'true') {
       this.app.use((req, res, next) => {
         this.logger.debug(`[${req.method}] ${req.originalUrl}`);
         next();

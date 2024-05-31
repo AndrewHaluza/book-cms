@@ -37,27 +37,63 @@ type Author {
 }
 
 type Query {
-  books(pagination: GetBookPaginationArgs!): [Book!]!
-  booksSearch(pagination: GetBookPaginationArgs!): [Book!]!
+  """
+  Get books list;
+    
+    Allowed roles: `all users`;
+  """
+  books(getBooksArgs: GetBooksArgs!): [Book!]!
+
+  """
+  Get book by ID;
+    
+    Allowed roles: `all users`;
+  """
   book(id: Float!): Book!
   authors: Author!
   author(id: Float!): Author!
 }
 
-input GetBookPaginationArgs {
+input GetBooksArgs {
   offset: Int = 0
   limit: Int = 10
   search: String
+
+  """
+  Sort field;
+    Allowed values: `id`, `title`, `publishedAt`;
+    Allowed roles: `all users`;
+  """
+  sortField: String! = "id"
+
+  """
+  Sort order;
+    Allowed values: `ASC`, `DESC`;
+    Allowed roles: `all users`;
+  """
+  sortOrder: String! = "ASC"
 }
 
 type Mutation {
-  """Create a new book, allowed for roles: admin, moderator;"""
+  """
+  Create a new book;
+    
+    Allowed roles: `admin`, `moderator`;
+  """
   createBook(createBookInput: createBookInput!): Book!
 
-  """Update a book, allowed for roles: admin, moderator;"""
+  """
+  Update a book;
+    
+    Allowed roles: `admin`, `moderator`;
+  """
   updateBook(updateBookInput: updateBookInput!): Book!
 
-  """Remove a book, allowed for roles: admin;"""
+  """
+  Remove a book;
+    
+    Allowed roles: `admin`;
+  """
   removeBook(id: Float!): String!
 
   """Create an author, allowed for roles: admin, moderator;"""

@@ -1,12 +1,12 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToMany,
-  Index,
-} from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Book } from 'src/components/book/entities/book.entity';
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -20,8 +20,8 @@ export class Author {
   @Index({ fulltext: true })
   fullName: string;
 
-  @Column()
-  @Field({})
+  @Column({ unique: true })
+  @Field()
   email: string;
 
   @Column()

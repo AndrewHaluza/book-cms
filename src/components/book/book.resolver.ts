@@ -1,13 +1,14 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
+import { graphqlDescription } from 'src/helpers/gql-description';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { ROLES } from '../role/constants/roles';
 import { Roles } from '../role/decorators/role.decorator';
 import { RoleGuard } from '../role/guards/role.guard';
 import { BookService } from './book.service';
 import { CreateBookInput } from './dto/create-book.input';
-import { GetBookPaginationArgs } from './dto/get-book-pagination-args.input';
+import { GetBooksArgs } from './dto/get-books-args.input';
 import { UpdateBookInput } from './dto/update-book.input';
 import { Book } from './entities/book.entity';
 
@@ -16,7 +17,9 @@ export class BookResolver {
   constructor(private readonly bookService: BookService) {}
 
   @Mutation(() => Book, {
-    description: `Create a new book, allowed for roles: ${ROLES.admin}, ${ROLES.moderator};`,
+    description: graphqlDescription('Create a new book', {
+      roles: [ROLES.admin, ROLES.moderator],
+    }),
   })
   @Roles([ROLES.admin, ROLES.moderator])
   @UseGuards(GqlAuthGuard, RoleGuard)
@@ -24,23 +27,24 @@ export class BookResolver {
     return this.bookService.create(createBookInput);
   }
 
-  @Query(() => [Book])
-  async books(@Args('pagination') pagination: GetBookPaginationArgs) {
-    return await this.bookService.findAll(pagination);
+  @Query(() => [Book], {
+    description: graphqlDescription('Get books list', {}),
+  })
+  async books(@Args('getBooksArgs') getBooksArgs: GetBooksArgs) {
+    return await this.bookService.findAll(getBooksArgs);
   }
 
-  @Query(() => [Book])
-  async booksSearch(@Args('pagination') pagination: GetBookPaginationArgs) {
-    return await this.bookService.findAll(pagination);
-  }
-
-  @Query(() => Book, { name: 'book' })
+  @Query(() => Book, {
+    description: graphqlDescription('Get book by ID', {}),
+  })
   book(@Args('id') id: number) {
     return this.bookService.findOne(id);
   }
 
   @Mutation(() => Book, {
-    description: `Update a book, allowed for roles: ${ROLES.admin}, ${ROLES.moderator};`,
+    description: graphqlDescription('Update a book', {
+      roles: [ROLES.admin, ROLES.moderator],
+    }),
   })
   @Roles([ROLES.admin, ROLES.moderator])
   @UseGuards(GqlAuthGuard, RoleGuard)
@@ -49,7 +53,9 @@ export class BookResolver {
   }
 
   @Mutation(() => String, {
-    description: `Remove a book, allowed for roles: ${ROLES.admin};`,
+    description: graphqlDescription('Remove a book', {
+      roles: [ROLES.admin],
+    }),
   })
   @Roles([ROLES.admin])
   @UseGuards(GqlAuthGuard, RoleGuard)
