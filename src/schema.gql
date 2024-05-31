@@ -2,6 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Role {
+  id: Int!
+  name: String!
+  users: [User!]!
+}
+
+type User {
+  id: Int!
+  email: String!
+  fullName: String!
+  password: String!
+  role: Role!
+}
+
 type Book {
   id: Int!
   title: String!
@@ -37,11 +51,22 @@ input GetBookPaginationArgs {
 }
 
 type Mutation {
+  """Create a new book, allowed for roles: admin, moderator;"""
   createBook(createBookInput: createBookInput!): Book!
+
+  """Update a book, allowed for roles: admin, moderator;"""
   updateBook(updateBookInput: updateBookInput!): Book!
+
+  """Remove a book, allowed for roles: admin;"""
   removeBook(id: Float!): String!
+
+  """Create an author, allowed for roles: admin, moderator;"""
   createAuthor(createAuthorInput: createAuthorInput!): Author!
+
+  """Update an author, allowed for roles: admin, moderator;"""
   updateAuthor(updateAuthorInput: updateAuthorInput!): Author!
+
+  """Remove an author, allowed for roles: admin;"""
   removeAuthor(id: Float!): Author!
 }
 

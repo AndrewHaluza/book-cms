@@ -16,7 +16,6 @@ export class LocalAuthGuard extends AuthGuard('local') {
       request.body.email,
       request.body.password,
     );
-
     request.user = user;
 
     return !!user;

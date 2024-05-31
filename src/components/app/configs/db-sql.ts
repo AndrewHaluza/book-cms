@@ -9,5 +9,5 @@ export default (): TypeOrmModuleOptions => ({
   host: process.env.SQL_DB_HOST,
   database: process.env.SQL_DB_NAME,
   synchronize: true,
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
 });

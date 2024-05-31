@@ -22,7 +22,7 @@ reviews.
 publication year.
 +- Sorting and Pagination: Enable sorting by different book attributes and pagination for large
 result sets.
-- User Authentication and Authorization: Secure the system using JWT-based authentication
++- User Authentication and Authorization: Secure the system using JWT-based authentication
 and ACLs (Access Control Lists) to manage user permissions.
 - Rate Limiting: Implement rate limiting to prevent abuse of the system.
 4. Scalability and Performance:

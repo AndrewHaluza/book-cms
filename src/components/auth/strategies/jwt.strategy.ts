@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { AUTH_CONSTANTS } from '../constants';
-import { User } from 'src/components/users/entities/user.entity';
+import { SessionUser } from 'src/components/users/dto/session-user.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -15,7 +15,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: User) {
-    return { userId: payload.id };
+  validate(
+    payload: SessionUser & {
+      exp: number;
+      iat: number;
+    },
+  ): SessionUser {
+    const { id, email, role } = payload;
+
+    return { id, email, role };
   }
 }

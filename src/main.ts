@@ -10,10 +10,10 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 
-import { AllExceptionsFilter } from './filters/allExceptions.filter';
+import { AllExceptionsFilter } from './components/app/filters/allExceptions.filter';
 import { AppModule } from './components/app/app.module';
 import { CustomHeadersEnum } from './enums/custom-headers.enum';
-import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { HttpExceptionFilter } from './components/app/filters/http-exception.filter';
 
 // import * as helmet from 'helmet';
 
