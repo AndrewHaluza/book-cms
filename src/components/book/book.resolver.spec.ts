@@ -1,18 +1,21 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+
+import { AuthorService } from '../author/author.service';
+import { Author } from '../author/entities/author.entity';
+import { Role } from '../role/entities/role.entity';
+import { RoleService } from '../role/role.service';
+import { User } from '../users/entities/user.entity';
 import { BookResolver } from './book.resolver';
 import { BookService } from './book.service';
+import { GetBooksArgs } from './dto/get-books-args.input';
 import { Book } from './entities/book.entity';
-import { DataSource, Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { AuthorService } from '../author/author.service';
-import { User } from '../users/entities/user.entity';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Author } from '../author/entities/author.entity';
-import { RoleService } from '../role/role.service';
-import { Role } from '../role/entities/role.entity';
 
 describe('BookResolver', () => {
   let resolver: BookResolver;
+  let bookService: BookService;
   let bookRepositoryMock: Repository<Book>;
   let userRepositoryMock: Repository<User>;
   let authorRepositoryMock: Repository<Author>;
@@ -64,9 +67,83 @@ describe('BookResolver', () => {
     }).compile();
 
     resolver = module.get<BookResolver>(BookResolver);
+    bookService = module.get<BookService>(BookService);
   });
 
   it('should be defined', () => {
     expect(resolver).toBeDefined();
+  });
+
+  describe('books query', () => {
+    it('should return a list of books', async () => {
+      const getBooksArgs = new GetBooksArgs();
+      const expectedBooks = [new Book(), new Book()];
+
+      jest.spyOn(bookService, 'findAll').mockResolvedValue(expectedBooks);
+
+      const result = await resolver.books(getBooksArgs);
+
+      expect(result).toEqual(expectedBooks);
+    });
+  });
+
+  describe('book query', () => {
+    it('should return a book by id', async () => {
+      const book = new Book();
+      const id = 1;
+
+      jest.spyOn(bookService, 'findOne').mockResolvedValue(book);
+
+      const result = await resolver.book(id);
+
+      expect(result).toEqual(book);
+    });
+  });
+
+  describe('createBook mutation', () => {
+    it('should create a book', async () => {
+      const createBookInput = {
+        title: 'Title',
+        publishedAt: new Date(),
+        authors: [],
+      };
+      const book = new Book();
+
+      jest.spyOn(bookService, 'create').mockResolvedValue(book);
+
+      const result = await resolver.createBook(createBookInput);
+
+      expect(result).toEqual(book);
+    });
+  });
+
+  describe('updateBook mutation', () => {
+    it('should update a book', async () => {
+      const updateBookInput = {
+        id: 1,
+        title: 'Title',
+        publishedAt: new Date(),
+        authors: [],
+      };
+      const book = new Book();
+
+      jest.spyOn(bookService, 'update').mockResolvedValue(book);
+
+      const result = await resolver.updateBook(updateBookInput);
+
+      expect(result).toEqual(book);
+    });
+  });
+
+  describe('removeBook mutation', () => {
+    it('should remove a book', async () => {
+      const id = 1;
+
+      jest.spyOn(bookService, 'remove').mockResolvedValue('Book removed');
+
+      const result = await resolver.removeBook(id);
+
+      expect(result).toEqual('Book removed');
+    });
   });
 });
