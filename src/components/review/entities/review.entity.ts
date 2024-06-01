@@ -1,21 +1,34 @@
-import { Attribute, HashKey, ReturnModel, Table } from 'nestjs-dynamodb';
+import { Field, ObjectType } from '@nestjs/graphql';
+import {
+  Attribute,
+  HashKey,
+  RangeKey,
+  ReturnModel,
+  Table,
+} from 'nestjs-dynamodb';
 
 @Table('review')
+@ObjectType()
 export class ReviewEntity {
+  @Field({ nullable: false })
   @HashKey({})
-  pk: string;
+  pk: string; // `BOOK_ID#${bookId}`
 
+  @Field({ nullable: false })
+  @RangeKey()
+  sk: string; // `USER_ID#${userId}`
+
+  @Field()
   @Attribute()
   message: string;
 
+  @Field()
   @Attribute()
   rating: number;
 
+  @Field()
   @Attribute()
-  userId: number;
-
-  @Attribute()
-  publishedAt: Date;
+  publishedAt: number;
 }
 
 export const Review = ReturnModel<ReviewEntity>();

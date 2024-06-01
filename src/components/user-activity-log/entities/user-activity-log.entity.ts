@@ -12,11 +12,11 @@ import {
 export class UserActivityLogEntity {
   @Field({ nullable: false })
   @HashKey({})
-  pk: string;
+  pk: string; // `USER_ID#${userId}`
 
   @Field()
   @RangeKey()
-  sk: string;
+  sk: string; // `TIMESTAMP#${userId}`
 
   @Field({})
   @Attribute({ defaultProvider: () => '' })

@@ -49,6 +49,14 @@ type UserActivityLogEntity {
   details: String!
 }
 
+type ReviewEntity {
+  pk: String!
+  sk: String!
+  message: String!
+  rating: Float!
+  publishedAt: Float!
+}
+
 type Query {
   """
   Get current user session data;
@@ -86,6 +94,13 @@ type Query {
     Allowed roles: `admin`, `moderator`, `user`;
   """
   userActivityLogs: [UserActivityLogEntity!]!
+
+  """
+  Get user reviews;
+    
+    Allowed roles: `all users`;
+  """
+  findByUser(userId: Float!): [ReviewEntity!]!
 }
 
 input GetBooksArgs {
@@ -139,6 +154,7 @@ type Mutation {
   """Remove an author, allowed for roles: admin;"""
   removeAuthor(id: Float!): Author!
   createUserActivityLog(createUserActivityLogInput: createUserActivityLogInput!): UserActivityLogEntity!
+  createReview(createReviewInput: createReviewInput!): ReviewEntity!
 }
 
 input createBookInput {
@@ -168,4 +184,11 @@ input updateAuthorInput {
 input createUserActivityLogInput {
   activityType: String!
   details: String!
+}
+
+input createReviewInput {
+  bookId: Float!
+  message: String!
+  rating: Float!
+  publishedAt: DateTime!
 }

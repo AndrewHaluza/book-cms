@@ -32,8 +32,8 @@ export class UserActivityLogService {
   ): Promise<UserActivityLogEntity> {
     const userActivityLogSaveData = {
       ...input,
-      sk: Date.now().toString(),
-      pk: userId.toString(),
+      sk: `TIMESTAMP#${Date.now().toString()}`,
+      pk: `USER_ID#${userId}`,
     };
     const userActivityLog = await this.userActivityLogEntityRepository.create(
       userActivityLogSaveData,
@@ -69,7 +69,7 @@ export class UserActivityLogService {
       TableName: 'user-activity-log',
       KeyConditionExpression: 'pk = :pk',
       ExpressionAttributeValues: {
-        ':pk': { S: userId.toString() },
+        ':pk': { S: `USER_ID#${userId}` },
       },
     };
 
