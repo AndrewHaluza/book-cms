@@ -12,12 +12,15 @@ $ cp example.env ./.env
 
 **Tested with versions**
 
-| Component |     Version      | Tested On |
-| :-------: | :--------------: | :-------: |
-|  NodeJS   |     v20.14.0     | May 2025  |
-|    npm    |      10.7.0      | May 2025  |
-| postgres  | 16.3-1.pgdg120+1 | May 2025  |
-|   redis   |      7.0.5       | May 2025  |
+| Component                |     Version      | Tested On |
+| :----------------------: | :--------------: | :-------: |
+|  NodeJS                  |     v20.14.0     | May 2025  |
+|    npm                   |      10.7.0      | May 2025  |
+|   postgres               | 16.3-1.pgdg120+1 | May 2025  |
+|   redis                  |      7.0.5       | May 2025  |
+|   aws.java.sdk.version   |      2.5.0       | May 2025  |
+|   com.docker.compose     |      2.17.2      | May 2025  |
+
 
 ## Running the app
 
