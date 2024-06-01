@@ -2,6 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import { graphqlDescription } from '../../helpers/gql-description';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { ROLES } from '../role/constants/roles';
 import { Roles } from '../role/decorators/role.decorator';
@@ -23,8 +24,11 @@ export class BookResolver {
   })
   @Roles([ROLES.admin, ROLES.moderator])
   @UseGuards(GqlAuthGuard, RoleGuard)
-  createBook(@Args('createBookInput') createBookInput: CreateBookInput) {
-    return this.bookService.create(createBookInput);
+  createBook(
+    @CurrentUser() user,
+    @Args('createBookInput') createBookInput: CreateBookInput,
+  ) {
+    return this.bookService.create(user, createBookInput);
   }
 
   @Query(() => [Book], {

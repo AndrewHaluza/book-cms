@@ -16,6 +16,12 @@ type User {
   role: Role!
 }
 
+type SessionUser {
+  id: Int!
+  email: String!
+  role: String!
+}
+
 type Book {
   id: Int!
   title: String!
@@ -36,7 +42,21 @@ type Author {
   books: [Book!]!
 }
 
+type UserActivityLogEntity {
+  pk: String!
+  sk: String!
+  activityType: String!
+  details: String!
+}
+
 type Query {
+  """
+  Get current user session data;
+    
+    Allowed roles: `user`, `moderator`, `admin`;
+  """
+  getSessionUser: SessionUser!
+
   """
   Get books list;
     
@@ -52,6 +72,20 @@ type Query {
   book(id: Float!): Book!
   authors: Author!
   author(id: Float!): Author!
+
+  """
+  Get specific user activity log;
+    
+    Allowed roles: `admin`, `moderator`, `user`;
+  """
+  userActivityLog(timestamp: String!): UserActivityLogEntity!
+
+  """
+  Get user activity logs;
+    
+    Allowed roles: `admin`, `moderator`, `user`;
+  """
+  userActivityLogs: [UserActivityLogEntity!]!
 }
 
 input GetBooksArgs {
@@ -104,6 +138,7 @@ type Mutation {
 
   """Remove an author, allowed for roles: admin;"""
   removeAuthor(id: Float!): Author!
+  createUserActivityLog(createUserActivityLogInput: createUserActivityLogInput!): UserActivityLogEntity!
 }
 
 input createBookInput {
@@ -128,4 +163,9 @@ input updateBookInput {
 
 input updateAuthorInput {
   id: Float!
+}
+
+input createUserActivityLogInput {
+  activityType: String!
+  details: String!
 }

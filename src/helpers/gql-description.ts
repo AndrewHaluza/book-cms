@@ -1,3 +1,4 @@
+// Uses for adding description to graphql description
 export function graphqlDescription(
   message: string,
   options: {

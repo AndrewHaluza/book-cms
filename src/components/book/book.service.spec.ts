@@ -8,6 +8,8 @@ import { CreateBookInput } from './dto/create-book.input';
 import { Author } from '../author/entities/author.entity';
 import { UpdateBookInput } from './dto/update-book.input';
 import { BadRequestException } from '@nestjs/common';
+import { UserActivityLogService } from '../user-activity-log/user-activity-log.service';
+import { createCacheKey } from '../../helpers/cache-key';
 
 describe('BookService', () => {
   let bookRepositoryMock: Repository<Book>;
@@ -15,6 +17,7 @@ describe('BookService', () => {
   let connectionMock: DataSource;
   let cacheManagerMock: Cache;
   let bookService: BookService;
+  const userActivityLogServiceMock = {} as UserActivityLogService;
 
   beforeEach(() => {
     authorServiceMock = {
@@ -37,6 +40,7 @@ describe('BookService', () => {
       bookRepositoryMock,
       authorServiceMock,
       connectionMock,
+      userActivityLogServiceMock,
       cacheManagerMock,
     );
   });
@@ -74,9 +78,10 @@ describe('BookService', () => {
       jest.spyOn(bookRepositoryMock, 'find').mockResolvedValueOnce(books);
 
       expect(await bookService.findAll({})).toEqual(books);
-      expect(cacheManagerMock.get).toHaveBeenCalledWith('book-{}');
+      const cacheKey = createCacheKey('book', {});
+      expect(cacheManagerMock.get).toHaveBeenCalledWith(cacheKey);
       expect(bookRepositoryMock.find).toHaveBeenCalled();
-      expect(cacheManagerMock.set).toHaveBeenCalledWith(`book-{}`, books);
+      expect(cacheManagerMock.set).toHaveBeenCalledWith(cacheKey, books);
     });
 
     it('should return cached data', async () => {
@@ -97,8 +102,10 @@ describe('BookService', () => {
 
       jest.spyOn(cacheManagerMock, 'get').mockResolvedValueOnce(books);
 
+      const cacheKey = createCacheKey('book', {});
+
       expect(await bookService.findAll({})).toEqual(books);
-      expect(cacheManagerMock.get).toHaveBeenCalledWith('book-{}');
+      expect(cacheManagerMock.get).toHaveBeenCalledWith(cacheKey);
       expect(bookRepositoryMock.find).not.toHaveBeenCalled();
     });
 
@@ -176,7 +183,12 @@ describe('BookService', () => {
         .spyOn(connectionMock, 'transaction')
         .mockReturnValue(Promise.resolve(book));
 
-      expect(await bookService.create(createBookInput)).toEqual(book);
+      expect(
+        await bookService.create(
+          { id: 1, email: 'any@mail.com', role: 'user' },
+          createBookInput,
+        ),
+      ).toEqual(book);
     });
   });
 

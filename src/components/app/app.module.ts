@@ -6,6 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DynamoDBModule } from 'nestjs-dynamodb';
 
 import { AuthModule } from '../auth/auth.module';
 import { AuthorModule } from '../author/author.module';
@@ -14,24 +15,30 @@ import { RoleModule } from '../role/role.module';
 import { UsersModule } from '../users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import DB_SQL_CONFIG from './configs/db-sql';
+import cacheConfig from './configs/cache.config';
+import dbDynamodbConfig from './configs/db-dynamodb.config';
+import sqlDbConfig from './configs/db-sql';
 import envConfig from './configs/env';
 import graphqlConfig from './configs/graphql';
 import throttlerConfig from './configs/throttler';
 import { GqlThrottlerGuard } from './guards/qraphql-throttler.guard';
+import { ReviewModule } from '../review/review.module';
 
 @Module({
   imports: [
     ThrottlerModule.forRoot(throttlerConfig()),
     ConfigModule.forRoot(envConfig()),
     GraphQLModule.forRoot<ApolloDriverConfig>(graphqlConfig()),
-    TypeOrmModule.forRoot(DB_SQL_CONFIG()),
-    CacheModule.register({ isGlobal: true, ttl: 30000 }),
+    TypeOrmModule.forRoot(sqlDbConfig()),
+    CacheModule.register(cacheConfig()),
+    // initialize the dynamodb and models
+    DynamoDBModule.forRoot(dbDynamodbConfig()),
     AuthModule,
     UsersModule,
     BookModule,
     AuthorModule,
     RoleModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [

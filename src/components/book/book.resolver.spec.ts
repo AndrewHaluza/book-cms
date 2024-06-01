@@ -12,6 +12,12 @@ import { BookResolver } from './book.resolver';
 import { BookService } from './book.service';
 import { GetBooksArgs } from './dto/get-books-args.input';
 import { Book } from './entities/book.entity';
+import { UserActivityLogEntity } from '../user-activity-log/entities/user-activity-log.entity';
+import { UserActivityLogService } from '../user-activity-log/user-activity-log.service';
+import {
+  DYNAMODB_CLIENT,
+  DynamoDBClientModule,
+} from '../aws/dynamodb/aws-dynamodb.module';
 
 describe('BookResolver', () => {
   let resolver: BookResolver;
@@ -21,6 +27,10 @@ describe('BookResolver', () => {
   let authorRepositoryMock: Repository<Author>;
   let roleRepositoryMock: Repository<Role>;
   let dataSourceMock: DataSource;
+  const userActivityLogEntityRepositoryMock =
+    {} as Repository<UserActivityLogEntity>;
+  const DynamoDBClientModuleMock = {} as DynamoDBClientModule;
+
   const cacheManagerMock = {
     get: jest.fn(),
     set: jest.fn(),
@@ -39,6 +49,7 @@ describe('BookResolver', () => {
         BookService,
         AuthorService,
         RoleService,
+        UserActivityLogService,
         {
           provide: getRepositoryToken(Book),
           useValue: bookRepositoryMock,
@@ -52,6 +63,14 @@ describe('BookResolver', () => {
           useValue: roleRepositoryMock,
         },
         {
+          provide: getRepositoryToken(UserActivityLogEntity),
+          useValue: roleRepositoryMock,
+        },
+        {
+          provide: getRepositoryToken(UserActivityLogEntity),
+          useValue: userActivityLogEntityRepositoryMock,
+        },
+        {
           provide: DataSource,
           useValue: dataSourceMock,
         },
@@ -62,6 +81,14 @@ describe('BookResolver', () => {
         {
           provide: getRepositoryToken(Author),
           useValue: authorRepositoryMock,
+        },
+        {
+          provide: DYNAMODB_CLIENT,
+          useValue: DynamoDBClientModuleMock,
+        },
+        {
+          provide: '__UserActivityLogEntityDynamoDBModel__',
+          useValue: DynamoDBClientModuleMock,
         },
       ],
     }).compile();
@@ -111,7 +138,7 @@ describe('BookResolver', () => {
 
       jest.spyOn(bookService, 'create').mockResolvedValue(book);
 
-      const result = await resolver.createBook(createBookInput);
+      const result = await resolver.createBook({}, createBookInput);
 
       expect(result).toEqual(book);
     });
