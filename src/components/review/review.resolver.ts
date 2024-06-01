@@ -1,13 +1,13 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
+import { graphqlDescription } from '../../helpers/gql-description';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { SessionUser } from '../users/dto/session-user.dto';
+import { CreateReviewInput } from './dto/create-review.input';
 import { ReviewEntity } from './entities/review.entity';
 import { ReviewService } from './review.service';
-import { CreateReviewInput } from './dto/create-review.input';
-import { graphqlDescription } from 'src/helpers/gql-description';
 
 @Resolver('ReviewResolver')
 export class ReviewResolver {
