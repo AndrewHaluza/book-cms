@@ -7,22 +7,22 @@ Redis, DynamoDB, and AWS. The system should allow users to manage book informati
 handle large datasets efficiently, and ensure high availability and security.
 
 Requirements
-+1. System Architecture:
-+- Design a service for the Books CMS using NestJS.
-+- Use GraphQL to handle data fetching and mutations efficiently.
-+2. Database Design:
-+- Utilize PostgreSQL for storing relational data such as book details (title, author, publication
+1. System Architecture:
+- Design a service for the Books CMS using NestJS.
+- Use GraphQL to handle data fetching and mutations efficiently.
+2. Database Design:
+- Utilize PostgreSQL for storing relational data such as book details (title, author, publication
 date, etc.).
 - Use DynamoDB for managing non-relational data such as user activity logs and book
 reviews.
 - Implement caching mechanisms with Redis to enhance data retrieval performance.
 3. Features:
-+- CRUD Operations: Implement create, read, update, and delete operations for book entries.
-+- Search : Implement a robust search functionality for books with filters like author, title, and
+- CRUD Operations: Implement create, read, update, and delete operations for book entries.
+- Search : Implement a robust search functionality for books with filters like author, title, and
 publication year.
-+- Sorting and Pagination: Enable sorting by different book attributes and pagination for large
+- Sorting and Pagination: Enable sorting by different book attributes and pagination for large
 result sets.
-+- User Authentication and Authorization: Secure the system using JWT-based authentication
+- User Authentication and Authorization: Secure the system using JWT-based authentication
 and ACLs (Access Control Lists) to manage user permissions.
 - Rate Limiting: Implement rate limiting to prevent abuse of the system.
 4. Scalability and Performance:
